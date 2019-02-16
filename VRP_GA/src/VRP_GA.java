@@ -12,8 +12,10 @@ public class VRP_GA {
 	Location[] locationSet = new Location[LocationNumber];
 	Vehicle[] vehicleSet = new Vehicle[VehicleNumber];
 	double[][] distanceMatrix = new double[LocationNumber][LocationNumber];
-	//test if the Location and Vehicle number are over the MAX recommend
+	int[][] oldMatrix = new int[VehicleNumber][LocationNumber];
+	int[][] newMatrix = new int[VehicleNumber][LocationNumber];
 	
+	//test if the Location and Vehicle number are over the MAX recommend
 	public boolean test() {
 //		if(LocationNumber < MAX_LOCATION && VehicleNumber < MAX_VEHICLE) {
 //			return true;
