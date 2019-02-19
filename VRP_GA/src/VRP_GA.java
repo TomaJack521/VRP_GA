@@ -59,6 +59,7 @@ public class VRP_GA {
 		VRP_GA algorithm = new VRP_GA();
 		if(!algorithm.test()) {
 			System.out.println("No start location");
+			return;
 		}
 		algorithm.calculateDistance();
 		

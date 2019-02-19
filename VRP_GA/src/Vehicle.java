@@ -6,7 +6,8 @@ public class Vehicle {
 	public double battery;
 	public int locations;
 	
-	ArrayList<Location> vehicleOrder = new ArrayList<Location>();
+	public int[] order;
 	
+
 	
 }
