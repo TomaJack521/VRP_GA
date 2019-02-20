@@ -28,15 +28,16 @@ public class Chromosome {
 		
 		int set = 1;
 		for(int i = 0; i < VehicleNumber; i++) {
-			if(i == VehicleNumber - 1) {
-				for(int j = 0; j < LocationNumber - Math.ceil(LocationNumber/VehicleNumber) *(VehicleNumber-1); j++) {
+			if(i < (LocationNumber%VehicleNumber)) {
+				for(int j = 0; j < Math.ceil(LocationNumber/VehicleNumber); j++) {
 					order[i][j] = set;
 					set++;
 				}
-			}
-			for(int j = 0; j < Math.ceil(LocationNumber/VehicleNumber); j++) {
-				order[i][j] = set;
-				set++;
+			}else {
+				for(int j = 0; j < LocationNumber/VehicleNumber; j++) {
+					order[i][j] = set;
+					set++;
+				}
 			}
 		}
 		
@@ -65,5 +66,17 @@ public class Chromosome {
 		}
 		
 		return copy;
+	}
+	
+	public void mutation(Chromosome c) {
+		int size, c1, c2;
+		size = (int)(1+Math.random()*(3-1+1));
+		c1 = (int)(Math.random()*((c.order.length))-1+1);
+		c2 = (int)(Math.random()*((c.order.length))-1+1);
+		while(true) {
+			break;
+		}
+			size =(int)(1+Math.random()*(3-1+1));
+		
 	}
 }
