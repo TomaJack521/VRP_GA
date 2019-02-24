@@ -42,6 +42,27 @@ public class VRP_GA {
 		
 	}
 	
+	public void addData() {
+		
+		//use this function to get location and vehicle from the backend
+		
+	}
+	
+	public double calFit(Chromosome c) {
+		//this function is used to calculate the single chromosome fitness
+		double fitness = 0;
+		int i,j;
+		
+		for(i = 0; i < c.order.length; i++) {
+			for(j = 0; j < c.order[i].length, j++) {
+				
+			}
+		}
+		
+		
+		return fitness;
+	}
+	
 	public void addLocationData(Location l, int number) {
 		LocationSet[number] = l;
 	}
