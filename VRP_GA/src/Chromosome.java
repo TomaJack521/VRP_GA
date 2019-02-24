@@ -68,12 +68,62 @@ public class Chromosome {
 		return copy;
 	}
 	
+	public Chromosome singleVehicleMutation(Chromosome c) {
+		int vehicle, location1, location2;
+		int replace;
+		Chromosome newOne = new Chromosome();
+		newOne = newOne.clone(c);
+		
+		vehicle = (int)(0+Math.random()*((c.order.length-1)-1+1));
+		location1 = (int)(0+Math.random()*((c.order[vehicle].length-1)-1+1));
+		location2 = (int)(0+Math.random()*((c.order[vehicle].length-1)-1+1));
+		while(location1==location2) {
+			location2 = (int)(0+Math.random()*((c.order[vehicle].length-1)-1+1));
+		}
+		replace = newOne.order[vehicle][location1];
+		newOne.order[vehicle][location1] = newOne.order[vehicle][location2];
+		newOne.order[vehicle][location2] = replace;
+		
+		return newOne;
+	}
+	
+	public Chromosome doubleVehicleMutation(Chromosome c) {
+		int vehicle1, vehicle2, location1, location2;
+		int replace;
+		Chromosome newOne = new Chromosome();
+		newOne = newOne.clone(c);
+		
+		vehicle1 = (int)(0+Math.random()*((c.order.length-1)-1+1));
+		vehicle2 = (int)(0+Math.random()*((c.order.length-1)-1+1));
+		while(vehicle1 == vehicle2) {
+			vehicle2 = (int)(0+Math.random()*((c.order.length-1)-1+1));
+		}
+		
+		location1 = (int)(0+Math.random()*((c.order[vehicle1].length-1)-1+1));
+		location2 = (int)(0+Math.random()*((c.order[vehicle2].length-1)-1+1));
+		
+		replace = newOne.order[vehicle1][location1];
+		newOne.order[vehicle1][location1] = newOne.order[vehicle2][location2];
+		newOne.order[vehicle2][location2] = replace;
+		
+		return newOne;
+	}
+	
+	public Chromosome singleVehicleCut(Chromosome c) {
+		int size, vehicle, location1, location2;
+		int[] replace;
+		Chromosome newOne = new Chromosome();
+		
+		size = (int)(2+Math.random()*(4-2+1));
+		
+	}
+	
 	public void mutation(Chromosome c) {
 		int size, c1, c2;
 		size = (int)(1+Math.random()*(3-1+1));
 		c1 = (int)(Math.random()*((c.order.length))-1+1);
 		c2 = (int)(Math.random()*((c.order.length))-1+1);
-		while(true) {
+		while(size > c.order[c1].length || size > c.order[c2].length) {
 			break;
 		}
 			size =(int)(1+Math.random()*(3-1+1));
