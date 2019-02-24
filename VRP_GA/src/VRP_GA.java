@@ -1,19 +1,23 @@
 import java.util.ArrayList;
+import java.util.List;
+
 
 public class VRP_GA {
 
 	private final static int MAX_LOCATION = 1000;
 	private final static int MAX_VEHICLE = 10;
 	
-	private int LocationNumber = 0;
-	private int VehicleNumber = 0;
+	private int LocationNumber;
+	private int VehicleNumber;
+	private int popSize;
+	private int shortestDistance;
+	private int whichChromosome;
+	private double[][] distanceMatrix;
+	private Location[] LocationSet;
+	private Vehicle[] VehicleSet;
 	
+	private List<Chromosome> population = new ArrayList<Chromosome>();
 
-	Location[] locationSet = new Location[LocationNumber];
-	Vehicle[] vehicleSet = new Vehicle[VehicleNumber];
-	double[][] distanceMatrix = new double[LocationNumber][LocationNumber];
-	//int[][] oldMatrix = new int[VehicleNumber][LocationNumber];
-	//int[][] newMatrix = new int[VehicleNumber][LocationNumber];
 	
 	//test if the Location and Vehicle number are over the MAX recommend
 	public boolean test() {
@@ -26,7 +30,26 @@ public class VRP_GA {
 		return (LocationNumber < MAX_LOCATION && VehicleNumber < MAX_VEHICLE? true: false);
 	}
 	
-	public void calculateDistance() {
+	public VRP_GA(int VehicleNumber, int LocationNumber) {
+		
+		this.VehicleNumber = VehicleNumber;
+		this.LocationNumber = LocationNumber;
+		
+		this.VehicleSet = new Vehicle[VehicleNumber];
+		this.LocationSet = new Location[LocationNumber];
+		
+		this.distanceMatrix = new double[VehicleNumber][LocationNumber];
+		
+	}
+	
+	public void addLocationData(Location l, int number) {
+		LocationSet[number] = l;
+	}
+	public void addVehicleData(Vehicle v, int number) {
+		VehicleSet[number] = v;
+	}
+	
+	public double[][] calculateDistance(Location[] locationSet) {
 		
 		int i,j;
 		
@@ -37,7 +60,7 @@ public class VRP_GA {
 				if(locationSet[i].ifStart == true) {
 					locationSet[0] = locationSet[i];
 					locationSet[i] = exchange;
-					return;
+					break;
 				}
 				else {
 					continue;
@@ -45,6 +68,7 @@ public class VRP_GA {
 			}
 		}
 		
+		double[][] distanceMatrix = new double[VehicleNumber][LocationNumber];
 		for(i = 0; i < LocationNumber; i++) {
 			for(j = i; j < LocationNumber; j++) {
 				distanceMatrix[i][j] = 
@@ -53,17 +77,33 @@ public class VRP_GA {
 			}
 		}
 		
+		return distanceMatrix;
+		
 	}
 	
 	public static void main(String[] args) {
-		VRP_GA algorithm = new VRP_GA();
-		if(!algorithm.test()) {
-			System.out.println("No start location");
-			return;
-		}
-		algorithm.calculateDistance();
 		
 
 	}
+	
+	public int getLocationNumber() {
+		return LocationNumber;
+	}
 
+	public void setLocationNumber(int locationNumber) {
+		LocationNumber = locationNumber;
+	}
+
+	public int getVehicleNumber() {
+		return VehicleNumber;
+	}
+
+	public void setVehicleNumber(int vehicleNumber) {
+		VehicleNumber = vehicleNumber;
+	}
+
+	
+	public void setPopSize(int popSize) {
+		this.popSize = popSize;
+	}
 }
