@@ -28,13 +28,13 @@ public class Chromosome {
 		
 		int set = 1;
 		for(int i = 0; i < VehicleNumber; i++) {
-			if(i < (LocationNumber%VehicleNumber)) {
-				for(int j = 0; j < Math.ceil(LocationNumber/VehicleNumber); j++) {
+			if(i < ((LocationNumber-1)%VehicleNumber)) {
+				for(int j = 0; j < Math.ceil((LocationNumber-1)/VehicleNumber); j++) {
 					order[i][j] = set;
 					set++;
 				}
 			}else {
-				for(int j = 0; j < LocationNumber/VehicleNumber; j++) {
+				for(int j = 0; j < (LocationNumber-1)/VehicleNumber; j++) {
 					order[i][j] = set;
 					set++;
 				}
@@ -45,7 +45,7 @@ public class Chromosome {
 	
 	
 	public void init(int VehicleNumber, int LocationNumber) {
-		order = new int[VehicleNumber][LocationNumber];
+		order = new int[VehicleNumber][LocationNumber-1];
 		fitness = 0;
 		
 	}
