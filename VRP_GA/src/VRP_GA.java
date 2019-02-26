@@ -54,7 +54,7 @@ public class VRP_GA {
 		int i,j;
 		
 		for(i = 0; i < c.order.length; i++) {
-			for(j = 0; j < c.order[i].length, j++) {
+			for(j = 0; j < c.order[i].length; j++) {
 				
 			}
 		}
