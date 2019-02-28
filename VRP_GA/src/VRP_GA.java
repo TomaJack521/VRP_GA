@@ -10,7 +10,7 @@ public class VRP_GA {
 	private int LocationNumber;
 	private int VehicleNumber;
 	private int popSize;
-	private int shortestDistance;
+	private double shortestDistance;
 	private int whichChromosome;
 	private double[][] distanceMatrix;
 	private Location[] LocationSet;
@@ -42,7 +42,16 @@ public class VRP_GA {
 		
 	}
 	
-	public void addData() {
+	public void init() {
+		
+			Chromosome c = new Chromosome();
+			c.setFitness(calFit(c));
+			population.add(c);
+			shortestDistance = population.get(0).getFitness();
+			whichChromosome = 0;
+	}
+	
+	public  static void addData() {
 		
 		//use this function to get location and vehicle from the backend
 		
@@ -55,7 +64,19 @@ public class VRP_GA {
 		
 		for(i = 0; i < c.order.length; i++) {
 			for(j = 0; j < c.order[i].length; j++) {
+				if(j == 0) {
+					
+					fitness = distanceMatrix[0][c.order[i][j]];
+					
+				}else if(c.order[i][j] == 0) {
+					
+					fitness += distanceMatrix[0][c.order[i][j-1]];
+					break;
+				}else {
 				
+					fitness += distanceMatrix[c.order[i][j-1]][c.order[i][j]];
+				
+				}
 			}
 		}
 		
@@ -103,7 +124,7 @@ public class VRP_GA {
 	}
 	
 	public static void main(String[] args) {
-		
+		addData();
 
 	}
 	
