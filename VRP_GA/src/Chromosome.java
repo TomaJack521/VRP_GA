@@ -50,29 +50,63 @@ public class Chromosome {
 		
 	}
 	
-	public Chromosome clone(Chromosome c) {
-		if(c == null || c.order == null) {
-			return null;
-		}
+//	public Chromosome clone(Chromosome c) {
+//		if(c == null || c.order == null) {
+//			return null;
+//		}
+//		
+//		Chromosome copy = new Chromosome();
+//		copy.init(c.order.length, c.order[0].length);
+//		
+//		for(int i = 0; i < c.order.length; i++) {
+//			for(int j = 0; j < c.order[0].length; j++) {
+//				copy.order[i][j] = c.order[i][j];
+//				copy.fitness = c.fitness;
+//			}
+//		}
+//		
+//		return copy;
+//	}
+	
+	public Chromosome clone() {
 		
 		Chromosome copy = new Chromosome();
-		copy.init(c.order.length, c.order[0].length);
+		copy.init(order.length, order[0].length);
 		
-		for(int i = 0; i < c.order.length; i++) {
-			for(int j = 0; j < c.order[0].length; j++) {
-				copy.order[i][j] = c.order[i][j];
-				copy.fitness = c.fitness;
+		for(int i = 0; i < order.length; i++) {
+			for(int j = 0; j < order[0].length; j++) {
+				copy.order[i][j] = order[i][j];
+				copy.fitness = fitness;
 			}
 		}
 		
 		return copy;
 	}
 	
-	public Chromosome singleVehicleMutation(Chromosome c) {
+//	public Chromosome singleVehicleMutation(Chromosome c) {
+//		int vehicle, location1, location2;
+//		int replace;
+//		Chromosome newOne = new Chromosome();
+//		newOne = newOne.clone(c);
+//		
+//		vehicle = (int)(0+Math.random()*((newOne.order.length-1)-1+1));
+//		location1 = (int)(0+Math.random()*((newOne.order[vehicle].length-1)-1+1));
+//		location2 = (int)(0+Math.random()*((newOne.order[vehicle].length-1)-1+1));
+//		while(location1==location2) {
+//			location2 = (int)(0+Math.random()*((newOne.order[vehicle].length-1)-1+1));
+//		}
+//		replace = newOne.order[vehicle][location1];
+//		newOne.order[vehicle][location1] = newOne.order[vehicle][location2];
+//		newOne.order[vehicle][location2] = replace;
+//		
+//		return newOne;
+//	}
+	
+	public Chromosome singleVehicleMutation() {
 		int vehicle, location1, location2;
 		int replace;
 		Chromosome newOne = new Chromosome();
-		newOne = newOne.clone(c);
+		newOne = newOne.clone();
 		
 		vehicle = (int)(0+Math.random()*((newOne.order.length-1)-1+1));
 		location1 = (int)(0+Math.random()*((newOne.order[vehicle].length-1)-1+1));
@@ -87,11 +121,33 @@ public class Chromosome {
 		return newOne;
 	}
 	
-	public Chromosome doubleVehicleMutation(Chromosome c) {
+//	public Chromosome doubleVehicleMutation(Chromosome c) {
+//		int vehicle1, vehicle2, location1, location2;
+//		int replace;
+//		Chromosome newOne = new Chromosome();
+//		newOne = newOne.clone(c);
+//		
+//		vehicle1 = (int)(0+Math.random()*((newOne.order.length-1)-1+1));
+//		vehicle2 = (int)(0+Math.random()*((newOne.order.length-1)-1+1));
+//		while(vehicle1 == vehicle2) {
+//			vehicle2 = (int)(0+Math.random()*((newOne.order.length-1)-1+1));
+//		}
+//		
+//		location1 = (int)(0+Math.random()*((newOne.order[vehicle1].length-1)-1+1));
+//		location2 = (int)(0+Math.random()*((newOne.order[vehicle2].length-1)-1+1));
+//		
+//		replace = newOne.order[vehicle1][location1];
+//		newOne.order[vehicle1][location1] = newOne.order[vehicle2][location2];
+//		newOne.order[vehicle2][location2] = replace;
+//		
+//		return newOne;
+//	}
+	
+	public Chromosome doubleVehicleMutation() {
 		int vehicle1, vehicle2, location1, location2;
 		int replace;
 		Chromosome newOne = new Chromosome();
-		newOne = newOne.clone(c);
+		newOne = newOne.clone();
 		
 		vehicle1 = (int)(0+Math.random()*((newOne.order.length-1)-1+1));
 		vehicle2 = (int)(0+Math.random()*((newOne.order.length-1)-1+1));
@@ -109,11 +165,36 @@ public class Chromosome {
 		return newOne;
 	}
 	
-	public Chromosome singleVehicleCut(Chromosome c) {
+//	public Chromosome singleVehicleCut(Chromosome c) {
+//		int size, vehicle, location1, location2;
+//		int replace;
+//		Chromosome newOne = new Chromosome();
+//		newOne = newOne.clone(c);
+//		
+//		size = (int)(2+Math.random()*(4-2+1));
+//		vehicle = (int)(Math.random()*(newOne.order.length-0+1));
+//		
+//		location1 = (int)(0+Math.random()*(newOne.order[vehicle].length-size-0+1));
+//		location2 = (int)(0+Math.random()*(newOne.order[vehicle].length-size-0+1));
+//		while(location1-size <= location2 && location2 <= location1+size) {
+//			location2 = (int)(0+Math.random()*(newOne.order[vehicle].length-0+1));
+//		}
+//		
+//		for(int i = 0; i < size; i++) {
+//			replace = newOne.order[vehicle][location1+i];
+//			newOne.order[vehicle][location1+i] = newOne.order[vehicle][location2+i];
+//			newOne.order[vehicle][location2+i] = replace;
+//		}
+//		
+//		return newOne;
+//		
+//	}
+	
+	public Chromosome singleVehicleCut() {
 		int size, vehicle, location1, location2;
 		int replace;
 		Chromosome newOne = new Chromosome();
-		newOne = newOne.clone(c);
+		newOne = newOne.clone();
 		
 		size = (int)(2+Math.random()*(4-2+1));
 		vehicle = (int)(Math.random()*(newOne.order.length-0+1));
@@ -134,11 +215,37 @@ public class Chromosome {
 		
 	}
 	
-	public Chromosome doubleVehicleCut(Chromosome c) {
+//	public Chromosome doubleVehicleCut(Chromosome c) {
+//		int size, vehicle1, vehicle2, location1, location2;
+//		int replace;
+//		Chromosome newOne = new Chromosome();
+//		newOne = newOne.clone(c);
+//		
+//		size = (int)(2+Math.random()*(4-2+1));
+//		vehicle1 = (int)(Math.random()*(newOne.order.length-0+1));
+//		vehicle2 = (int)(Math.random()*(newOne.order.length-0+1));
+//		while(vehicle1 == vehicle2) {
+//			vehicle2 = (int)(0+Math.random()*((newOne.order.length-1)-1+1));
+//		}
+//		
+//
+//		location1 = (int)(0+Math.random()*(newOne.order[vehicle1].length-size-0+1));
+//		location2 = (int)(0+Math.random()*(newOne.order[vehicle2].length-size-0+1));
+//		
+//		for(int i = 0; i < size; i++) {
+//			replace = newOne.order[vehicle1][location1+i];
+//			newOne.order[vehicle1][location1+i] = newOne.order[vehicle2][location2+i];
+//			newOne.order[vehicle2][location2+i] = replace;
+//		}
+//		
+//		return newOne;
+//	}
+	
+	public Chromosome doubleVehicleCut() {
 		int size, vehicle1, vehicle2, location1, location2;
 		int replace;
 		Chromosome newOne = new Chromosome();
-		newOne = newOne.clone(c);
+		newOne = newOne.clone();
 		
 		size = (int)(2+Math.random()*(4-2+1));
 		vehicle1 = (int)(Math.random()*(newOne.order.length-0+1));
@@ -160,15 +267,16 @@ public class Chromosome {
 		return newOne;
 	}
 	
-	public void mutation(Chromosome c) {
-		int size, c1, c2;
-		size = (int)(1+Math.random()*(3-1+1));
-		c1 = (int)(Math.random()*((c.order.length))-1+1);
-		c2 = (int)(Math.random()*((c.order.length))-1+1);
-		while(size > c.order[c1].length || size > c.order[c2].length) {
-			break;
-		}
-			size =(int)(1+Math.random()*(3-1+1));
-		
-	}
+	
+//	public void mutation(Chromosome c) {
+//		int size, c1, c2;
+//		size = (int)(1+Math.random()*(3-1+1));
+//		c1 = (int)(Math.random()*((c.order.length))-1+1);
+//		c2 = (int)(Math.random()*((c.order.length))-1+1);
+//		while(size > c.order[c1].length || size > c.order[c2].length) {
+//			break;
+//		}
+//			size =(int)(1+Math.random()*(3-1+1));
+//		
+//	}
 }
