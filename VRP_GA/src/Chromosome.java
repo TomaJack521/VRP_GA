@@ -1,8 +1,8 @@
 
 public class Chromosome {
 	
-	private double fitness;
-	public int[][] order;
+	double fitness;
+	int[][] order;
 	
 	public double getFitness() {
 		return fitness;
@@ -15,16 +15,12 @@ public class Chromosome {
 		
 	}
 	
-	public Chromosome(int VehicleNumber, int LocationNumber, int size) {
+	public Chromosome(int VehicleNumber, int LocationNumber) {
 		if(VehicleNumber <= 0 || LocationNumber <= 0) {
 			return;
 		}
-		init(VehicleNumber, LocationNumber);
-		for(int i = 0; i < VehicleNumber; i++) {
-			for(int j = 0; j < LocationNumber; j++) {
-				order[i][j] = 0;
-			}
-		}
+		order = new int[VehicleNumber][LocationNumber-1];
+		fitness = 0;
 		
 		int set = 1;
 		for(int i = 0; i < VehicleNumber; i++) {

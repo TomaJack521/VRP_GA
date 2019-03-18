@@ -1,0 +1,14 @@
+{
+	"Vehicle": 5,
+	"Location number": 50,
+	"Locations": [
+		{
+            "longtitude": 234.2354234,
+            "latitude": 342.32423423
+        },
+        {
+            "longtitude": 233.23453242,
+            "latitude": 324.32423423
+        }
+	]
+}
