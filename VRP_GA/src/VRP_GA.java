@@ -32,7 +32,7 @@ public class VRP_GA {
 		
 		this.VehicleNumber = VehicleNumber;
 		this.LocationNumber = LocationNumber;
-		this.LocationSet = new Location[LocationNumber];
+		
 		
 		this.distanceMatrix = new double[VehicleNumber][LocationNumber];
 		this.population = new ArrayList<Chromosome>();
@@ -40,40 +40,48 @@ public class VRP_GA {
 	
 	public void init() {
 		
-			Chromosome c = new Chromosome(VehicleNumber, LocationNumber);
-			c.setFitness(calFit(c));
-			population.add(c);
-			shortestDistance = population.get(0).getFitness();
-			distanceMatrix = calculateDistance(LocationSet);
+		LocationSet = new Location[LocationNumber];
+		for(int i = 0; i < LocationNumber; i++) {
+			LocationSet[i] = new Location();
+			LocationSet[i].latitude = 5*100*i;
+			LocationSet[i].longitude = 2*100*i;
+			
+		}
+		distanceMatrix = calculateDistance(LocationSet);
+		Chromosome c = new Chromosome(VehicleNumber, LocationNumber);
+		c.setFitness(calFit(c));
+		population.add(c);
+		shortestDistance = population.get(0).getFitness();
+			
 	}
 	
-	public Location addData() {
-		
-		//use this function to get location and vehicle from the backend
-		Location l = new Location();
-		
-		return l;
-	}
 	
 	public double calFit(Chromosome c) {
 		//this function is used to calculate the single chromosome fitness
 		double fitness = 0;
 		int i = 0,j = 0;
-		for(i = 0; i < c.order.length; i++) {
-			for(j = 0; j < c.order[i].length; j++) {
-				if(j == 0) {
-					
-					fitness += distanceMatrix[0][c.order[i][0]];
-					
-				}else {
-				
-					fitness += distanceMatrix[c.order[i][j-1]][c.order[i][j]];
-				
-				}
+//		for(i = 0; i < c.order.length; i++) {
+//			for(j = 0; j < c.order[i].length; j++) {
+//				if(j == 0) {
+//					
+//					fitness += distanceMatrix[0][c.order[i][0]];
+//					
+//				}else {
+//					if(c.order[i][j] == 0) {
+//						break;
+//					}
+//					fitness += distanceMatrix[c.order[i][j-1]][c.order[i][j]];
+//				
+//				}
+//			}
+//			fitness += distanceMatrix[0][c.order[i][j-1]];
+//		}
+		for(; i < c.order.length; i++) {
+			for(j = 1; j < c.order[i].length; j++) {
+				fitness = fitness + distanceMatrix[c.order[i][j-1]][c.order[i][j]];
 			}
-			fitness += distanceMatrix[0][c.order[i][j-1]];
+			fitness = fitness + distanceMatrix[0][c.order[i][0]] + distanceMatrix[0][c.order[i][c.order[i].length-1]];
 		}
-		
 		
 		return fitness;
 	}
@@ -82,14 +90,17 @@ public class VRP_GA {
 	public double[][] calculateDistance(Location[] locationSet) {
 		
 		int i,j;
+		int counter = 0;
 		
 		
-		double[][] distanceMatrix = new double[VehicleNumber][LocationNumber];
+		double[][] distanceMatrix = new double[LocationNumber][LocationNumber];
 		for(i = 0; i < LocationNumber; i++) {
+			//System.out.println(locationSet[i].latitude + "    " + locationSet[i].longitude);;
 			for(j = i; j < LocationNumber; j++) {
-				distanceMatrix[i][j] = 
-						Math.sqrt((locationSet[i].latitude-locationSet[j].latitude)*(locationSet[i].latitude-locationSet[j].latitude)+(locationSet[i].longitude-locationSet[j].longitude)*(locationSet[i].longitude-locationSet[j].longitude));
+				
+				distanceMatrix[i][j] = Math.sqrt((locationSet[i].latitude-locationSet[j].latitude)*(locationSet[i].latitude-locationSet[j].latitude)+(locationSet[i].longitude-locationSet[j].longitude)*(locationSet[i].longitude-locationSet[j].longitude));
 				distanceMatrix[j][i] = distanceMatrix[i][j];
+				counter++;
 			}
 		}
 		
@@ -101,12 +112,6 @@ public class VRP_GA {
 		
 		VRP_GA vrp = new VRP_GA(1,15);
 		
-		for(int i = 0; i < vrp.VehicleNumber; i++) {
-			vrp.LocationSet[i] = new Location();
-			vrp.LocationSet[i].latitude = 5*100;
-			vrp.LocationSet[i].longitude = 2*100;
-					
-		}
 		vrp.init();
 		//after the data input into the function, it will decide which algorithm and strategy to use.
 		vrp.selectMode();
@@ -149,10 +154,14 @@ public class VRP_GA {
 				if(roll == 1) {
 					population.add(population.get(j).singleVehicleCut());
 				}
-				population.get(geneSize+i).setFitness(calFit(population.get(geneSize+i)));
+				
+				population.get(population.size()-1).setFitness(calFit(population.get(population.size()-1)));
 			}
+			
+			
+			
 		}
-		printResult();
+		//printResult();
 		
 	}
 	
@@ -170,6 +179,9 @@ public class VRP_GA {
 	
 	public void orderPop(int geneSize) {
 		int next = 0;
+		if(population.size() < geneSize) {
+			geneSize = population.size();
+		}
 		double min = population.get(next).getFitness();
 		for(int i = 0; i < geneSize; i++) {
 			for(int j = i; j < geneSize; j++) {
@@ -212,13 +224,13 @@ public class VRP_GA {
 		this.popSize = popSize;
 	}
 	
-	public void printResult() {
-		
-		for(int i = 0; i < population.get(0).order.length; i++) {
-			for(int j = 0; j < population.get(0).order[i].length; i++) {
-				System.out.print(population.get(0).order[i][j]+" ");
-				System.out.println("");
-			}
-		}
-	}
+//	public void printResult() {
+//		
+//		for(int i = 0; i < population.get(0).order.length; i++) {
+//			for(int j = 0; j < population.get(0).order[i].length; i++) {
+//				System.out.print(population.get(0).order[i][j]+" ");
+//				System.out.println("");
+//			}
+//		}
+//	}
 }
