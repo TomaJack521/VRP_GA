@@ -1,13 +1,16 @@
+//This program is written by Runyu Zhang in 2018-2019 UNNC Year3 GRP project Team 10
+
 import java.util.Random;
 
 public class Chromosome {
 	
-	double fitness;
-	int[][] order;
+	double fitness; //amount distance
+	int[][] order; //record the order of each car
 	
 	public double getFitness() {
 		return fitness;
 	}
+	
 	public void setFitness(double fitness) {
 		this.fitness = fitness;
 	}
@@ -21,6 +24,7 @@ public class Chromosome {
 			return;
 		}
 		
+		//build the order by seperate it average
 		order = new int[VehicleNumber][];
 		int set = 1;
 		for(int i = 0; i < order.length; i++) {
@@ -41,24 +45,7 @@ public class Chromosome {
 		
 	}
 	
-//	public Chromosome clone(Chromosome c) {
-//		if(c == null || c.order == null) {
-//			return null;
-//		}
-//		
-//		Chromosome copy = new Chromosome();
-//		copy.init(c.order.length, c.order[0].length);
-//		
-//		for(int i = 0; i < c.order.length; i++) {
-//			for(int j = 0; j < c.order[0].length; j++) {
-//				copy.order[i][j] = c.order[i][j];
-//				copy.fitness = c.fitness;
-//			}
-//		}
-//		
-//		return copy;
-//	}
-	
+	//clone a absolute same chromosome
 	public Chromosome clone() {
 		
 		Chromosome copy = new Chromosome();
@@ -75,6 +62,7 @@ public class Chromosome {
 		return copy;
 	}
 	
+	//detail functions in four ways
 	public Chromosome singleVehicleMutation() {
 		int vehicle, location1, location2;
 		int replace;
@@ -143,7 +131,7 @@ public class Chromosome {
 			newOne.order[vehicle][location1+i] = newOne.order[vehicle][location2+i];
 			newOne.order[vehicle][location2+i] = replace;
 		}
-		System.out.println("2");
+
 		return newOne;
 		
 	}
@@ -171,7 +159,7 @@ public class Chromosome {
 			newOne.order[vehicle1][location1+i] = newOne.order[vehicle2][location2+i];
 			newOne.order[vehicle2][location2+i] = replace;
 		}
-		System.out.println("3");
+
 		return newOne;
 	}
 	

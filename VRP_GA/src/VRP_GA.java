@@ -1,111 +1,57 @@
+//This program is written by Runyu Zhang in 2018-2019 UNNC Year3 GRP project Team 10
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-//import org.json.JSONObject;
-import net.sf.json.JSONObject;  
+import net.sf.json.JSONObject; 
+import net.sf.json.JSONArray;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import net.sf.json.JSONArray;
-
-
 public class VRP_GA {
 
+	//used to constrain the program
 	private final static int MAX_LOCATION = 1000;
 	private final static int MAX_VEHICLE = 10;
 	private final static int LOOP = 10;
 	
-	private int LocationNumber;
-	private int VehicleNumber;
+	private static int LocationNumber;
+	private static int VehicleNumber;
 	private double shortestDistance;
 	private double[][] distanceMatrix;
-	private Location[] LocationSet;
-	private List<Chromosome> population;
-
+	private static Location[] LocationSet;
+	private static List<Chromosome> population;
 	
-	//test if the Location and Vehicle number are over the MAX recommend
-	public boolean test() {
-
-		
-		return (LocationNumber < MAX_LOCATION && VehicleNumber < MAX_VEHICLE? true: false);
-	}
-	
+	//constructor only used for VehicleNumber and LocationNumber
 	public VRP_GA(int VehicleNumber, int LocationNumber) {
 		
-		this.VehicleNumber = VehicleNumber;
-		this.LocationNumber = LocationNumber;
+		VRP_GA.VehicleNumber = VehicleNumber;
+		VRP_GA.LocationNumber = LocationNumber;
 		
+		this.distanceMatrix = new double[LocationNumber][LocationNumber];
+		population = new ArrayList<Chromosome>();
 		
-		this.distanceMatrix = new double[VehicleNumber][LocationNumber];
-		this.population = new ArrayList<Chromosome>();
 	}
-	
-	public void init() {
-		
-		distanceMatrix = calculateDistance(LocationSet);
-		Chromosome c = new Chromosome(VehicleNumber, LocationNumber);
-		c.setFitness(calFit(c));
-		population.add(c);
-		shortestDistance = population.get(0).getFitness();
-			
-	}
-	
-	
-	public double calFit(Chromosome c) {
-		//this function is used to calculate the single chromosome fitness
-		double fitness = 0;
-		int i = 0,j = 0;
 
-		for(; i < c.order.length; i++) {
-			for(j = 1; j < c.order[i].length; j++) {
-				fitness = fitness + distanceMatrix[c.order[i][j-1]][c.order[i][j]];
-			}
-			fitness = fitness + distanceMatrix[0][c.order[i][0]] + distanceMatrix[0][c.order[i][c.order[i].length-1]];
-		}
-		
-		return fitness;
-	}
-	
-	
-	public double[][] calculateDistance(Location[] locationSet) {
-		
-		int i,j;
-		int counter = 0;
-		
-		
-		double[][] distanceMatrix = new double[LocationNumber][LocationNumber];
-		for(i = 0; i < LocationNumber; i++) {
-			//System.out.println(locationSet[i].latitude + "    " + locationSet[i].longitude);;
-			for(j = i; j < LocationNumber; j++) {
-				
-				distanceMatrix[i][j] = Math.sqrt((locationSet[i].latitude-locationSet[j].latitude)*(locationSet[i].latitude-locationSet[j].latitude)+(locationSet[i].longitude-locationSet[j].longitude)*(locationSet[i].longitude-locationSet[j].longitude));
-				distanceMatrix[j][i] = distanceMatrix[i][j];
-				counter++;
-			}
-		}
-		
-		return distanceMatrix;
-		
-	}
 	
 	public static void main(String[] args) {
 		
 		//main function is used for testing
 		Chromosome c;
-		VRP_GA vrp = new VRP_GA(2,16);
+		VRP_GA vrp = new VRP_GA(1,16);
 		vrp.init();
 		vrp.selectMode();
-		c = vrp.population.get(0);
+		c = population.get(0);
 
 		for(int i = 0; i < 15; i++) {
 			vrp = new VRP_GA(2,16);
 			vrp.init();
 			vrp.selectMode();
-			if(vrp.population.get(0).fitness < c.fitness) {
-				c = vrp.population.get(0);
+			if(population.get(0).fitness < c.fitness) {
+				c = population.get(0);
 			}
 		}
 		
@@ -116,8 +62,68 @@ public class VRP_GA {
 		}
 		System.out.println(c.fitness);
 
+		/*SAMPLE 
+		 * Chromosome c;
+		 * VRP_GA vrp = new VRP(2, 50);
+		 * vrp.init();
+		 * vrp.selectMode();
+		 * c = vrp.population.get(0);
+		 * c.order is the result.
+		 */
 	}
 	
+	//the back end used interface
+	public static String vrpAlgorithm(String s) {
+		
+		Chromosome c;
+		Location l;
+		
+		try {
+			
+			//get basic info by object
+			JsonParser parser = new JsonParser();
+			c = new Chromosome();
+			l = new Location();
+			JsonObject object = (JsonObject)parser.parse(s);
+			VehicleNumber = object.get("Vehicle").getAsInt();
+			LocationNumber = object.get("Location").getAsInt();
+			LocationSet = new Location[LocationNumber];
+			
+			//constructor for algotrithm
+			VRP_GA vrp = new VRP_GA(VehicleNumber,LocationNumber);
+			
+			//get location info
+			JsonArray array = object.get("Locations").getAsJsonArray();
+			for(int i = 0; i < LocationNumber; i++) {
+				LocationSet[i] = new Location();
+				
+				JsonObject subObject = array.get(i).getAsJsonObject();
+				l.latitude = subObject.get("latitude").getAsDouble();
+				l.longitude = subObject.get("longtitude").getAsDouble();
+				
+				LocationSet[i] = l;
+				
+			}
+			
+			vrp.init();
+			vrp.selectMode();
+			c = population.get(0);
+			
+			for(int i = 0; i < LOOP; i++) {
+				vrp.init();
+				vrp.selectMode();
+				c = (c.fitness > population.get(0).fitness)?c:population.get(0);
+			}
+			
+			return transferJson(c);
+		}catch(JsonIOException e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+	
+	//mode select function
 	public void selectMode() {
 		if(VehicleNumber == 1 && LocationNumber <= 50) {
 			mode1();
@@ -133,6 +139,7 @@ public class VRP_GA {
 		}
 	}
 	
+	//details implement of different mode
 	public void mode1() {
 		int geneNumber = 10;
 		int geneSize = 20;
@@ -140,11 +147,10 @@ public class VRP_GA {
 		Random rand = new Random();
 		int couter = 0;
 		
-		for(int i = 0; i < geneNumber; i++) {
-			
-			
-			for(int j = 0; j < geneSize; j++) {
-				roll = rand.nextInt(2);
+		for(int i = 0; i < geneNumber; i++) { //determine the generation
+			for(int j = 0; j < geneSize; j++) { //determine the size of each generation
+				
+				roll = rand.nextInt(2); //select the each chromosome gene type
 				if(roll == 0) {
 					population.add(population.get(j).singleVehicleMutation());
 				}
@@ -162,16 +168,7 @@ public class VRP_GA {
 			System.out.println(population.size());
 			shortestDistance = population.get(0).getFitness();
 			System.out.println(shortestDistance);
-//			for(int m = 0; m<population.size(); m++) {
-//				for(int n = 0; n < population.get(m).order[0].length; n++) {
-//					System.out.print(population.get(m).order[0][n] + " ");
-//				}
-//				System.out.print("  " + population.get(m).fitness);
-//				System.out.println();
-//			}
-
 		}
-		//printResult();
 		
 	}
 	
@@ -291,26 +288,29 @@ public class VRP_GA {
 		}
 	}
 	
+	//used to sort by fitness
 	public void orderPop(int geneSize) {
+		
 		int next = 0;
 		if(population.size() < geneSize) {
 			geneSize = population.size();
 		}
 		double min = population.get(next).getFitness();
 		for(int i = 0; i < geneSize; i++) {
-			for(int j = i; j < geneSize; j++) {
+			for(int j = i; j < population.size(); j++) {
 				if(min > population.get(j).getFitness()) {
 					next = j;
 					min = population.get(j).getFitness();
 				}
 			}
+			
 			population.add(i, population.get(next));
 			population.remove(next+1);
 		}
 			
-		
 	}
 	
+	//used to delete the same chromosome
 	public void deletePop(int geneSize) {
 		if(population.size() < geneSize) {
 			geneSize = population.size();
@@ -331,29 +331,15 @@ public class VRP_GA {
 		}
 	}
 	
+	//remove the chromosome more than the popSize
 	public void removePop(int geneSize) {
 		while(population.size()>geneSize) {
 			population.remove(population.size()-1);
 		}
 	}
 	
-	public int getLocationNumber() {
-		return LocationNumber;
-	}
-
-	public void setLocationNumber(int locationNumber) {
-		LocationNumber = locationNumber;
-	}
-
-	public int getVehicleNumber() {
-		return VehicleNumber;
-	}
-
-	public void setVehicleNumber(int vehicleNumber) {
-		VehicleNumber = vehicleNumber;
-	}
-	
-	public String transferJson(Chromosome c) {
+	//transfer the info to Json string
+	public static String transferJson(Chromosome c) {
 		JSONArray jsonArray = new JSONArray();
 		JSONObject json1 = new JSONObject();
 		json1.accumulate("distance", c.fitness);
@@ -371,56 +357,81 @@ public class VRP_GA {
 		
 		return jsonArray.toString();
 	}
+	
+	//test if the Location and Vehicle number are over the MAX recommend
+	public boolean test() {
 
-	public String vrpAlgorithm(String s) {
-		
-		Chromosome c;
-		Location l;
-		String result;
-		
-		try {
-			
-			//get basic info by object
-			JsonParser parser = new JsonParser();
-			c = new Chromosome();
-			l = new Location();
-			JsonObject object = (JsonObject)parser.parse(s);
-			this.VehicleNumber = object.get("Vehicle").getAsInt();
-			this.LocationNumber = object.get("Location").getAsInt();
-			this.LocationSet = new Location[LocationNumber];
-			
-			//constructor for algotrithm
-			VRP_GA vrp = new VRP_GA(VehicleNumber,LocationNumber);
-			
-			//get location info
-			JsonArray array = object.get("Locations").getAsJsonArray();
-			for(int i = 0; i < LocationNumber; i++) {
-				vrp.LocationSet[i] = new Location();
-				
-				JsonObject subObject = array.get(i).getAsJsonObject();
-				l.latitude = subObject.get("latitude").getAsDouble();
-				l.longitude = subObject.get("longtitude").getAsDouble();
-				
-				vrp.LocationSet[i] = l;
-				
-			}
-			
-			vrp.init();
-			vrp.selectMode();
-			c = population.get(0);
-			
-			for(int i = 0; i < LOOP; i++) {
-				vrp.init();
-				vrp.selectMode();
-				c = (c.fitness > vrp.population.get(0).fitness)?c:vrp.population.get(0);
-			}
-			
-			return transferJson(c);
-		}catch(JsonIOException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return (LocationNumber < MAX_LOCATION && VehicleNumber < MAX_VEHICLE? true: false);
 		
 	}
 	
+	//init dataset after explaining the json string
+	public void init() {
+		distanceMatrix = new double[LocationNumber][LocationNumber];
+		distanceMatrix = calculateDistance(LocationSet);
+		Chromosome c = new Chromosome(VehicleNumber, LocationNumber);
+		c.setFitness(calFit(c));
+		population.add(c);
+		shortestDistance = population.get(0).getFitness();
+
+	}
+	
+	//calculate the chromosome fitness means the all vehicles and locations distance
+	public double calFit(Chromosome c) {
+		double fitness = 0;
+		int i = 0,j = 0;
+
+		for(; i < c.order.length; i++) { //select the vehicle
+			for(j = 1; j < c.order[i].length; j++) { //select the location
+				fitness = fitness + distanceMatrix[c.order[i][j-1]][c.order[i][j]];
+			}
+			
+			//add distance to start location
+			fitness = fitness + distanceMatrix[0][c.order[i][0]] + distanceMatrix[0][c.order[i][c.order[i].length-1]];
+		}
+		
+		return fitness;
+	}
+	
+	//details functions to build distance matrix
+	public double[][] calculateDistance(Location[] locationSet) {
+		
+		int i,j;
+		
+		double[][] distanceMatrix = new double[LocationNumber][LocationNumber];
+		
+		for(i = 0; i < LocationNumber; i++) {
+			for(j = i; j < LocationNumber; j++) {
+				
+				if(j == i) {
+					distanceMatrix[i][i] = 0;
+				}
+				
+				distanceMatrix[i][j] = 
+						Math.sqrt((locationSet[i].latitude-locationSet[j].latitude)*(locationSet[i].latitude-locationSet[j].latitude)+(locationSet[i].longitude-locationSet[j].longitude)*(locationSet[i].longitude-locationSet[j].longitude));
+				distanceMatrix[j][i] = distanceMatrix[i][j];
+				
+			}
+		}
+		
+		return distanceMatrix;
+		
+	}
+	
+	//some setter and getter
+	public int getLocationNumber() {
+		return LocationNumber;
+	}
+
+	public void setLocationNumber(int locationNumber) {
+		LocationNumber = locationNumber;
+	}
+
+	public int getVehicleNumber() {
+		return VehicleNumber;
+	}
+
+	public void setVehicleNumber(int vehicleNumber) {
+		VehicleNumber = vehicleNumber;
+	}
 }
